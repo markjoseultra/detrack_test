@@ -1,0 +1,1 @@
+final testDataLocation = {"id": "001", "target_lat": 1.265, "target_lng": 103.695};

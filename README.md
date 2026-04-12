@@ -11,5 +11,4 @@ Tools • Dart 3.11.4 • DevTools 2.54.2
 
 - Clone the project
 - Run `flutter pub get` in terminal
-- Run `dart run build_runner build`
 - Run the app in android for now.

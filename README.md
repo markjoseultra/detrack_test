@@ -12,3 +12,8 @@ Tools • Dart 3.11.4 • DevTools 2.54.2
 - Clone the project
 - Run `flutter pub get` in terminal
 - Run the app in android for now.
+
+## How the mock HTTP server is setup
+
+- I use S3 that returns a json file
+- Here is the url https://fakeapi94.s3.ap-southeast-1.amazonaws.com/target_location.json

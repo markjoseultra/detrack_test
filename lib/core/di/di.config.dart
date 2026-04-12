@@ -28,7 +28,9 @@ import '../../domain/repositories/device_location_repository.dart' as _i344;
 import '../../domain/repositories/target_location_repository.dart' as _i213;
 import '../../domain/usecases/track_device_location_usecase.dart' as _i450;
 import '../../presentation/pages/home_page/cubit/home_page_cubit.dart' as _i455;
-import '../services/http_module/dio.dart' as _i802;
+import '../services/app_database/app_database.dart' as _i94;
+import '../services/app_database/db_module.dart' as _i78;
+import '../services/http_module/http_module.dart' as _i35;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -37,13 +39,12 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final dbModule = _$DbModule();
     final httpModule = _$HttpModule();
+    gh.lazySingleton<_i94.AppDatabase>(() => dbModule.db);
     gh.lazySingleton<_i361.Dio>(() => httpModule.client);
     gh.lazySingleton<_i191.DeviceLocationDatasource>(
       () => _i164.DeviceLocationDatasourceImpl(),
-    );
-    gh.lazySingleton<_i811.LocationCollectionsDatasource>(
-      () => _i681.LocationsCollectionsDatasourceImpl(),
     );
     gh.lazySingleton<_i786.TargetLocationDatasource>(
       () => _i102.TargetLocationDatasourceImpl(dio: gh<_i361.Dio>()),
@@ -52,6 +53,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i708.TargetLocationRepositoryImpl(
         datasource: gh<_i786.TargetLocationDatasource>(),
       ),
+    );
+    gh.lazySingleton<_i811.LocationCollectionsDatasource>(
+      () =>
+          _i681.LocationsCollectionsDatasourceImpl(db: gh<_i94.AppDatabase>()),
     );
     gh.lazySingleton<_i344.DeviceLocationRepository>(
       () => _i355.DeviceLocationRepositoryImpl(
@@ -75,4 +80,6 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$HttpModule extends _i802.HttpModule {}
+class _$DbModule extends _i78.DbModule {}
+
+class _$HttpModule extends _i35.HttpModule {}

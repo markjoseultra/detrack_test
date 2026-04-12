@@ -6,7 +6,9 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: LocationCollectionsDatasource)
 class LocationsCollectionsDatasourceImpl implements LocationCollectionsDatasource {
-  final db = AppDatabase();
+  final AppDatabase db;
+
+  LocationsCollectionsDatasourceImpl({required this.db});
 
   @override
   Future<List<LocationCollectionResponse>> getLocationCollections({required int numberOfReadings}) async {

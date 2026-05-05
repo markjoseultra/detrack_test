@@ -22,7 +22,7 @@ class MainApp extends StatelessWidget {
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
-      home: BlocProvider(create: (_) => getIt<HomePageCubit>()..loadLocationHistory(), child: HomePage()),
+      home: BlocProvider(create: (_) => getIt<HomePageCubit>()..requestPermission(), child: HomePage()),
     );
   }
 }

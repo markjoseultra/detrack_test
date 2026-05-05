@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:detrack_test/core/resources/values/state_status.dart';
 import 'package:detrack_test/core/resources/values/strings.dart';
 import 'package:detrack_test/core/utils/helpers/errors/location_error.dart';
@@ -7,10 +9,39 @@ import 'package:detrack_test/presentation/widgets/readings_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final List<int> _filters = [5, 10, 15, 20];
+
+  late Timer _timer;
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  void startTracking({required HomePageState state}) async {
+    if (!mounted) return;
+
+    context.read<HomePageCubit>().toogleLocationTracking();
+
+    await context.read<HomePageCubit>().getTargetLocation();
+
+    if (state.status is ActiveState) {
+      if (_timer.isActive) return _timer.cancel();
+    }
+
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
+      await context.read<HomePageCubit>().trackLocation();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,8 +150,7 @@ class HomePage extends StatelessWidget {
           builder: (context, state) {
             return ElevatedButton(
               onPressed: () {
-                context.read<HomePageCubit>().toogleLocationTracking();
-                context.read<HomePageCubit>().trackLocation();
+                startTracking(state: state);
               },
               child: Text(state.status is ActiveState ? Strings.stopTracking : Strings.startTracking),
             );

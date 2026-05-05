@@ -54,4 +54,9 @@ class DeviceLocationRepositoryImpl implements DeviceLocationRepository {
       failure: (error) => Result.failure(error),
     );
   }
+
+  @override
+  Future<Result<bool>> getDeviceLocationPermission() async {
+    return await deviceLocationDatasource.getLocationPermission();
+  }
 }

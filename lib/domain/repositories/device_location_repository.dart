@@ -10,4 +10,5 @@ abstract interface class DeviceLocationRepository {
     required double distance,
   });
   Future<Result<CurrentLocationEntity>> getCurrentDeviceLocation();
+  Future<Result<bool>> getDeviceLocationPermission();
 }

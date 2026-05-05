@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:detrack_test/core/resources/values/state_status.dart';
 import 'package:detrack_test/core/utils/helpers/result/result.dart';
 import 'package:detrack_test/domain/entities/location_entity.dart';
@@ -47,32 +45,37 @@ class HomePageCubit extends Cubit<HomePageState> {
     emit(state.copyWith(status: state.status != ActiveState() ? ActiveState() : InitialState()));
   }
 
-  void trackLocation({int interval = 5}) async {
+  void requestPermission() async {
+    await deviceLocationRepository.getDeviceLocationPermission();
+  }
+
+  Future<void> getTargetLocation() async {
     if (state.targetLocation == null) {
       final result = await targetLocationRepository.getTargetLocation();
 
-      result.when(
-        success: (data) => emit(state.copyWith(targetLocation: data)),
-        failure: (error) => emit(state.copyWith(status: FailedState(error))),
+      await result.when(
+        success: (data) async {
+          emit(state.copyWith(targetLocation: data));
+        },
+        failure: (error) {
+          emit(state.copyWith(status: FailedState(error)));
+        },
       );
     }
+  }
 
-    if (state.targetLocation != null && state.status is ActiveState) {
-      Timer.periodic(Duration(seconds: interval), (timer) async {
-        if (state.status != ActiveState()) {
-          timer.cancel();
-        }
-        final locationResult = await trackDeviceLocationUseCase(
-          targetLat: state.targetLocation!.targetLat,
-          targetLng: state.targetLocation!.targetLng,
-        );
-        locationResult.when(
-          success: (data) {
-            loadLocationHistory();
-          },
-          failure: (error) => emit(state.copyWith(status: FailedState(error))),
-        );
-      });
+  Future<void> trackLocation() async {
+    if (state.status is ActiveState && state.targetLocation != null) {
+      final locationResult = await trackDeviceLocationUseCase(
+        targetLat: state.targetLocation!.targetLat,
+        targetLng: state.targetLocation!.targetLng,
+      );
+      locationResult.when(
+        success: (data) {
+          loadLocationHistory();
+        },
+        failure: (error) => emit(state.copyWith(status: FailedState(error))),
+      );
     }
   }
 }

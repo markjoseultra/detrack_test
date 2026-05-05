@@ -3,4 +3,6 @@ import 'package:geolocator/geolocator.dart';
 
 abstract interface class DeviceLocationDatasource {
   Future<Result<Position>> getCurrentDeviceLocation();
+
+  Future<Result<bool>> getLocationPermission();
 }
